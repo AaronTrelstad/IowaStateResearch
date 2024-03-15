@@ -3,6 +3,10 @@
     margin-bottom: 3%;
 }
 
+.publicationsText p{
+    margin-left: 20px;
+}
+
 .publicationsTitle {
     margin-top:10%;
     margin-bottom:5%;
@@ -12,4 +16,9 @@
 .publicationsContainer {
     margin-left: 2%;
     text-align: left;
+}
+
+.publicationsLinks {
+    color: blue;
+    text-decoration: underline;
 }

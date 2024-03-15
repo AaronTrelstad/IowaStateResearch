@@ -1,7 +1,7 @@
-import Main from './main/main'
-import Datasets from './datasets/datasets';
-import Publications from './publications/publications';
-import Faculty from './faculty/faculty';
+import Main from './components/main/main'
+import Datasets from './components/datasets/datasets';
+import Publications from './components/publications/publications';
+import Faculty from './components/faculty/faculty';
 
 import {
   BrowserRouter,

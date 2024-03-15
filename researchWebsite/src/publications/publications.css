@@ -1,0 +1,15 @@
+.publicationsText {
+    color:black;
+    margin-bottom: 3%;
+}
+
+.publicationsTitle {
+    margin-top:10%;
+    margin-bottom:5%;
+    text-align:center;
+}
+
+.publicationsContainer {
+    margin-left: 2%;
+    text-align: left;
+}

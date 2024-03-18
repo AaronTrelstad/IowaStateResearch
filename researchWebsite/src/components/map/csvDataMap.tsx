@@ -13,7 +13,7 @@ const CSVDataMap: React.FC = () => {
                 container: mapContainer.current,
                 style: 'mapbox://styles/mapbox/outdoors-v12',
                 center: [-92, 42],
-                zoom: 5,
+                zoom: 3,
                 maxZoom: 15,
             });
 

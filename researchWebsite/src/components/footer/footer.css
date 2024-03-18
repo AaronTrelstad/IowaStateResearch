@@ -1,0 +1,41 @@
+body, html {
+    margin: 0;
+    padding: 0;
+}
+
+.footer {
+    position: relative;
+    width: 100%;
+    height: 8rem;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    background-color: #C41E3A;
+    color: white;
+}
+
+.footerContainer {
+    margin: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.footerHeaders {
+    margin: 0;
+    margin-bottom: 0.5rem;
+    padding: 0;
+}
+
+.linkText {
+    color: white;
+}
+
+.linkText:hover {
+    cursor: pointer;
+}
+
+
+
+
+
+  

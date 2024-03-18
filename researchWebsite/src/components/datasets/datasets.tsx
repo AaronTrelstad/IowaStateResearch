@@ -2,6 +2,7 @@ import React from 'react';
 import Header from '../header/header';
 import './datasets.css';
 import datasets from '../../assets/datasets/datasets.json';
+import Footer from '../footer/footer'
 
 const downloadFile = (name: string, id: number, format: string) => {
     const filename = `${name.replace(/\s+/g, '')}.${format}`;
@@ -36,6 +37,8 @@ const Datasets: React.FC = () => {
                     ))}
                 </div>
             </div>
+            <div className='datasetContainer'/>
+            <Footer />
         </>
     );
 };

@@ -16,9 +16,9 @@ const ColorDataMap: React.FC = () => {
                 zoom: 11,
                 maxZoom: 15,
             })
+            return () => map.remove();
         }
-    } )
-
+    }, []);
     return <div ref={mapContainer} className='subContainer' />;
 }
 

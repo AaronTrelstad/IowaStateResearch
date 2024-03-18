@@ -1,6 +1,7 @@
 import Header from '../header/header';
 import './publications.css';
 import publications from '../../assets/publicInfo/publications.json';
+import Footer from '../footer/footer'
 
 const PublicationContent: React.FC<any> = ({ title, authors, content, links, year }: any) => {
     const handleClick = () => {
@@ -28,6 +29,7 @@ const Publications: React.FC = () => {
                     <PublicationContent key={index} {...publication} />
                 ))}
             </div>
+            <Footer />
         </>
     );
 };

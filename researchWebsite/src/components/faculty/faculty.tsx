@@ -1,6 +1,7 @@
 import Header from '../header/header'
 import './faculty.css'
 import facultyMembers from '../../assets/publicInfo/facultyMembers'
+import Footer from '../footer/footer'
 
 const FacultyMember: React.FC<any> = ({ picture, name, title, researchAreas, email }) => {
   return (
@@ -30,6 +31,8 @@ const Faculty: React.FC = () => {
           ))}
         </div>
       </div>
+      <div className='facultyContainer'/>
+      <Footer />
     </>
   );
 };

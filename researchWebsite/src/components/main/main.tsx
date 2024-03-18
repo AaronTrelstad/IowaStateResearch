@@ -1,4 +1,5 @@
 import Header from '../header/header'
+import Footer from '../footer/footer'
 import DefaultMap from '../map/defaultMap'
 import JSONDataMap from '../map/jsonDataMap'
 import CSVDataMap from '../map/csvDataMap'
@@ -31,7 +32,7 @@ export default function Main() {
                     <CSVDataMap />
                 </div>
                 <div className='subContainer'>
-                    Map of Airports using CSV data, displayed with Mapbox Studio Tileset
+                    Map of Airports using CSV data, displayed with Mapbox Studio Tileset.
                 </div>
             </div>
             <div className='mainContainer'>
@@ -39,9 +40,11 @@ export default function Main() {
                     <ColorDataMap />
                 </div>
                 <div className='subContainer'>
-                    Map showing heatmap using Mapbox Studio Custom Styles
+                    Map showing heatmap using Mapbox Studio Custom Styles.
                 </div>
             </div>
+            <div className='mainContainer' />
+            <Footer />
         </>
     )
 }

@@ -12,9 +12,9 @@
         "format": ".json"
     },
     {
-        "name": "Weather Radar Sample",
-        "id": 1,
-        "description": "Contains temperature and rainfall data for the previous two weeks in Petersburg, ND",
+        "name": "Airport Data",
+        "id": 3,
+        "description": "Sample dataset that holds locations of several airports",
         "format": ".csv"
     },
     {

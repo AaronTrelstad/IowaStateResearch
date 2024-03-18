@@ -5,13 +5,13 @@ import '../main/main.css'
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiYWFyb250cmVsc3RhZCIsImEiOiJjbHRyaW16YnkwN3dmMmxwaWwyODljZnFmIn0.nzXluM3BCOrEu5_Xx-2deA';
 
-const DataMap: React.FC = () => {
-  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+const JSONDataMap: React.FC = () => {
+  const mapContainer = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (mapContainerRef.current) {
+    if (mapContainer.current) {
       const map = new mapboxgl.Map({
-        container: mapContainerRef.current,
+        container: mapContainer.current,
         style: 'mapbox://styles/mapbox/outdoors-v12',
         center: [-92, 42],
         zoom: 5,
@@ -26,6 +26,7 @@ const DataMap: React.FC = () => {
             .addTo(map)
             .setPopup(new mapboxgl.Popup().setHTML(
                 `<h3>${plant.name}</h3>
+                <h4>Location: ${plant.location}</h4>
                 <h4>Power Level: ${plant.powerLevel}</h4>
                 <h4>Outage Status: ${plant.outage}</h4>`
             ));
@@ -64,12 +65,13 @@ const DataMap: React.FC = () => {
           });
         });
       });
+      return () => map.remove();
     }
   }, []);
 
-  return <div ref={mapContainerRef} className='subContainer' />;
+  return <div ref={mapContainer} className='subContainer' />;
 };
 
-export default DataMap;
+export default JSONDataMap;
 
 

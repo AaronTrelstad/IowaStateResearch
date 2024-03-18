@@ -1,6 +1,8 @@
 import Header from '../header/header'
 import DefaultMap from '../map/defaultMap'
-import DataMap from '../map/mapData'
+import JSONDataMap from '../map/jsonDataMap'
+import CSVDataMap from '../map/csvDataMap'
+import ColorDataMap from '../map/colorDataMap'
 
 export default function Main() {
     return (
@@ -17,10 +19,27 @@ export default function Main() {
             </div>
             <div className='mainContainer'>
                 <div className='subContainer'>
-                    <DataMap />
+                    <JSONDataMap />
                 </div>
                 <div className='subContainer'>
-                    Connecting loaction markers with lines and changing color based on loaction properties.
+                    Connecting loaction markers with lines and changing color based on loaction properties. 
+                    This uses data from a JSON format file.
+                </div>
+            </div>
+            <div className='mainContainer'>
+                <div className='subContainer'>
+                    <CSVDataMap />
+                </div>
+                <div className='subContainer'>
+                    Map of Airports using CSV data, displayed with Mapbox Studio Tileset
+                </div>
+            </div>
+            <div className='mainContainer'>
+                <div className='subContainer'>
+                    <ColorDataMap />
+                </div>
+                <div className='subContainer'>
+                    Map showing heatmap using Mapbox Studio Custom Styles
                 </div>
             </div>
         </>

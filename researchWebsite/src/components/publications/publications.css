@@ -22,3 +22,7 @@
     color: blue;
     text-decoration: underline;
 }
+
+.publicationsLinks:hover {
+    cursor: pointer;
+}

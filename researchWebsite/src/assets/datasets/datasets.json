@@ -1,0 +1,34 @@
+[
+    {
+        "name": "Weather Radar Sample",
+        "id": 1,
+        "description": "Contains temperature and rainfall data for the previous two weeks in Petersburg, ND",
+        "format": ".csv"
+    },
+    {
+        "name": "City Data",
+        "id": 2,
+        "description": "Contains City and State names along with longitude and latitude.",
+        "format": ".json"
+    },
+    {
+        "name": "Weather Radar Sample",
+        "id": 1,
+        "description": "Contains temperature and rainfall data for the previous two weeks in Petersburg, ND",
+        "format": ".csv"
+    },
+    {
+        "name": "City Data",
+        "id": 2,
+        "description": "Contains City and State names along with longitude and latitude.",
+        "format": ".json"
+    },
+    {
+        "name": "Weather Radar Sample",
+        "id": 1,
+        "description": "Contains temperature and rainfall data for the previous two weeks in Petersburg, ND",
+        "format": ".csv"
+    }
+]
+
+

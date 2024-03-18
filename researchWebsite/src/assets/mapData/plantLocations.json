@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Plant 1",
+    "powerLevel": 20,
+    "location": [
+      -92,
+      42
+    ],
+    "connections": [
+      "Plant 4"
+    ],
+    "outage": false
+  },
+  {
+    "name": "Plant 2",
+    "powerLevel": 30,
+    "location": [
+      -93.5,
+      41.5
+    ],
+    "connections": [
+      "Plant 1"
+    ],
+    "outage": false
+  },
+  {
+    "name": "Plant 3",
+    "powerLevel": 50,
+    "location": [
+      -94,
+      40
+    ],
+    "connections": [
+      "Plant 2",
+      "Plant 4",
+      "Plant 1"
+    ],
+    "outage": true
+  },
+  {
+    "name": "Plant 4",
+    "powerLevel": 10,
+    "location": [
+      -90,
+      42
+    ],
+    "connections": [
+      "Plant 1"
+    ],
+    "outage": false
+  },
+  {
+    "name": "Plant 5",
+    "powerLevel": 80,
+    "location": [
+      -92,
+      40
+    ],
+    "connections": [],
+    "outage": false
+  }
+]

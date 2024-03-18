@@ -1,5 +1,6 @@
 import Header from '../header/header'
-import Map from '../map/map'
+import DefaultMap from '../map/defaultMap'
+import DataMap from '../map/mapData'
 
 export default function Main() {
     return (
@@ -8,10 +9,18 @@ export default function Main() {
             <h1 className='mainPageHeader'>Current Projects</h1>
             <div className='mainContainer'>
                 <div className='subContainer'>
-                    <Map />
+                    <DefaultMap />
                 </div>
                 <div className='subContainer'>
-                    Information on the map and the data that it shows 
+                    Basic Map.
+                </div>
+            </div>
+            <div className='mainContainer'>
+                <div className='subContainer'>
+                    <DataMap />
+                </div>
+                <div className='subContainer'>
+                    Connecting loaction markers with lines and changing color based on loaction properties.
                 </div>
             </div>
         </>

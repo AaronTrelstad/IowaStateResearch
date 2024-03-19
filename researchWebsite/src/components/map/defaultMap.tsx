@@ -17,7 +17,8 @@ const DefaultMap: React.FC = () => {
         maxZoom: 15,
       });
 
-      //map.addControl(new mapboxgl.NavigationControl(), "bottom-left");
+      map.addControl(new mapboxgl.NavigationControl(), "top-left");
+
       return () => map.remove();
     }
   }, []);

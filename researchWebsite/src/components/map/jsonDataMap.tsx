@@ -65,6 +65,9 @@ const JSONDataMap: React.FC = () => {
           });
         });
       });
+
+      map.addControl(new mapboxgl.NavigationControl(), "top-left");
+
       return () => map.remove();
     }
   }, []);

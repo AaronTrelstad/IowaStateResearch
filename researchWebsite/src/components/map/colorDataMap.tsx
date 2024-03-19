@@ -16,6 +16,9 @@ const ColorDataMap: React.FC = () => {
                 zoom: 11,
                 maxZoom: 15,
             })
+
+            map.addControl(new mapboxgl.NavigationControl(), "top-left");
+
             return () => map.remove();
         }
     }, []);

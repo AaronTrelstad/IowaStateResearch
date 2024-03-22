@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import mapboxgl from 'mapbox-gl';
 import dynamicMapData from '../../assets/mapData/dynamicMap.json';
 
@@ -16,11 +16,22 @@ const DynamicDataMap = () => {
                 zoom: 5
             });
 
+            map.addControl(new mapboxgl.NavigationControl(), "top-left");
+
+            const indexDisplay = document.createElement('div');
+            indexDisplay.className = 'index-display';
+            indexDisplay.style.position = 'absolute';
+            indexDisplay.style.top = '10px';
+            indexDisplay.style.right = '10px';
+            mapContainer.current.appendChild(indexDisplay);
+
             map.on('load', () => {
                 let index = 0;
 
                 const iteratePlantData = () => {
                     const timeData = dynamicMapData[index];
+
+                    indexDisplay.textContent = `Timestamp: ${index}`;
 
                     timeData.forEach((plant) => {
                         const plantLayer = `${plant.name}-circle-${index}`;
@@ -45,7 +56,7 @@ const DynamicDataMap = () => {
                                     }
                                 },
                                 paint: {
-                                    'circle-radius': 6,
+                                    'circle-radius': 8,
                                     'circle-color': plantColor
                                 }
                             });
@@ -78,7 +89,7 @@ const DynamicDataMap = () => {
                                         },
                                         paint: {
                                             'line-color': lineColor,
-                                            'line-width': 2,
+                                            'line-width': 4,
                                         },
                                     });
                                 }
@@ -87,10 +98,6 @@ const DynamicDataMap = () => {
                     });
 
                     index++;
-
-                    if (index == dynamicMapData.length) {
-                        index = 0;
-                    }
 
                     if (index < dynamicMapData.length) {
                         setTimeout(iteratePlantData, 1000);

@@ -1,0 +1,452 @@
+[
+    [
+        {
+            "name": "Plant 1",
+            "location": [
+                -92,
+                42
+            ],
+            "connections": [
+                "Plant 2",
+                "Plant 4"
+            ],
+            "outage": true
+        },
+        {
+            "name": "Plant 2",
+            "location": [
+                -90,
+                43
+            ],
+            "connections": [
+                "Plant 1",
+                "Plant 3"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 3",
+            "location": [
+                -91.5,
+                40.5
+            ],
+            "connections": [
+                "Plant 2"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 4",
+            "location": [
+                -93,
+                41
+            ],
+            "connections": [
+                "Plant 1"
+            ],
+            "outage": false
+        }
+    ],
+    [
+        {
+            "name": "Plant 1",
+            "location": [
+                -92,
+                42
+            ],
+            "connections": [
+                "Plant 2",
+                "Plant 4"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 2",
+            "location": [
+                -90,
+                43
+            ],
+            "connections": [
+                "Plant 1",
+                "Plant 3"
+            ],
+            "outage": true
+        },
+        {
+            "name": "Plant 3",
+            "location": [
+                -91.5,
+                40.5
+            ],
+            "connections": [
+                "Plant 2"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 4",
+            "location": [
+                -93,
+                41
+            ],
+            "connections": [
+                "Plant 1"
+            ],
+            "outage": false
+        }
+    ],
+    [
+        {
+            "name": "Plant 1",
+            "location": [
+                -92,
+                42
+            ],
+            "connections": [
+                "Plant 2",
+                "Plant 4"
+            ],
+            "outage": true
+        },
+        {
+            "name": "Plant 2",
+            "location": [
+                -90,
+                43
+            ],
+            "connections": [
+                "Plant 1",
+                "Plant 3"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 3",
+            "location": [
+                -91.5,
+                40.5
+            ],
+            "connections": [
+                "Plant 2"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 4",
+            "location": [
+                -93,
+                41
+            ],
+            "connections": [
+                "Plant 1"
+            ],
+            "outage": false
+        }
+    ],
+    [
+        {
+            "name": "Plant 1",
+            "location": [
+                -92,
+                42
+            ],
+            "connections": [
+                "Plant 2",
+                "Plant 4"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 2",
+            "location": [
+                -90,
+                43
+            ],
+            "connections": [
+                "Plant 1",
+                "Plant 3"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 3",
+            "location": [
+                -91.5,
+                40.5
+            ],
+            "connections": [
+                "Plant 2"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 4",
+            "location": [
+                -93,
+                41
+            ],
+            "connections": [
+                "Plant 1"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 5",
+            "location": [
+                -95,
+                44
+            ],
+            "connections": [
+                "Plant 1",
+                "Plant 2",
+                "Plant 3",
+                "Plant 4"
+            ],
+            "outage": false
+        }
+    ],
+    [
+        {
+            "name": "Plant 1",
+            "location": [
+                -92,
+                42
+            ],
+            "connections": [
+                "Plant 2",
+                "Plant 4"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 2",
+            "location": [
+                -90,
+                43
+            ],
+            "connections": [
+                "Plant 1"
+                
+            ],
+            "outage": true
+        },
+        {
+            "name": "Plant 3",
+            "location": [
+                -91.5,
+                40.5
+            ],
+            "connections": [
+                
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 4",
+            "location": [
+                -93,
+                41
+            ],
+            "connections": [
+                "Plant 1"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 5",
+            "location": [
+                -95,
+                44
+            ],
+            "connections": [
+                "Plant 1",
+                "Plant 3",
+                "Plant 4"
+            ],
+            "outage": true
+        }
+    ],
+    [
+        {
+            "name": "Plant 1",
+            "location": [
+                -92,
+                42
+            ],
+            "connections": [
+                "Plant 2",
+                "Plant 4"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 2",
+            "location": [
+                -90,
+                43
+            ],
+            "connections": [
+                "Plant 1",
+                "Plant 3"
+            ],
+            "outage": true
+        },
+        {
+            "name": "Plant 3",
+            "location": [
+                -91.5,
+                40.5
+            ],
+            "connections": [
+                "Plant 2"
+            ],
+            "outage": true
+        },
+        {
+            "name": "Plant 4",
+            "location": [
+                -93,
+                41
+            ],
+            "connections": [
+                "Plant 1"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 5",
+            "location": [
+                -95,
+                44
+            ],
+            "connections": [
+                "Plant 1",
+                "Plant 3",
+                "Plant 4"
+            ],
+            "outage": true
+        }
+    ],
+    [
+        {
+            "name": "Plant 1",
+            "location": [
+                -92,
+                42
+            ],
+            "connections": [
+                "Plant 2",
+                "Plant 4"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 2",
+            "location": [
+                -90,
+                43
+            ],
+            "connections": [
+                "Plant 1",
+                "Plant 3"
+            ],
+            "outage": true
+        },
+        {
+            "name": "Plant 3",
+            "location": [
+                -91.5,
+                40.5
+            ],
+            "connections": [
+                "Plant 2"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 4",
+            "location": [
+                -93,
+                41
+            ],
+            "connections": [
+                "Plant 1"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 5",
+            "location": [
+                -95,
+                44
+            ],
+            "connections": [
+                "Plant 1",
+                "Plant 3",
+                "Plant 4"
+            ],
+            "outage": false
+        }
+    ],
+    [
+        {
+            "name": "Plant 1",
+            "location": [
+                -92,
+                42
+            ],
+            "connections": [
+                "Plant 2",
+                "Plant 4"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 2",
+            "location": [
+                -90,
+                43
+            ],
+            "connections": [
+                "Plant 1",
+                "Plant 3"
+            ],
+            "outage": true
+        },
+        {
+            "name": "Plant 3",
+            "location": [
+                -91.5,
+                40.5
+            ],
+            "connections": [
+                "Plant 2"
+            ],
+            "outage": true
+        },
+        {
+            "name": "Plant 4",
+            "location": [
+                -93,
+                41
+            ],
+            "connections": [
+                "Plant 1"
+            ],
+            "outage": false
+        },
+        {
+            "name": "Plant 5",
+            "location": [
+                -95,
+                44
+            ],
+            "connections": [
+                "Plant 1",
+                "Plant 3",
+                "Plant 4"
+            ],
+            "outage": true
+        }
+    ]
+]

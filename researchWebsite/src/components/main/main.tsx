@@ -4,6 +4,7 @@ import DefaultMap from '../map/defaultMap'
 import JSONDataMap from '../map/jsonDataMap'
 import CSVDataMap from '../map/csvDataMap'
 import ColorDataMap from '../map/colorDataMap'
+import DynamicDataMap from '../map/dynamicDataMap'
 
 export default function Main() {
     return (
@@ -12,10 +13,10 @@ export default function Main() {
             <h1 className='mainPageHeader'>Current Projects</h1>
             <div className='mainContainer'>
                 <div className='subContainer'>
-                    <DefaultMap />
+                    <DynamicDataMap />
                 </div>
                 <div className='subContainer'>
-                    Basic Map.
+                    Dynamic Map.
                 </div>
             </div>
             <div className='mainContainer'>
@@ -41,6 +42,15 @@ export default function Main() {
                 </div>
                 <div className='subContainer'>
                     Map showing heatmap using Mapbox Studio Custom Styles.
+                </div>
+            </div>
+            <div className='mainContainer' />
+            <div className='mainContainer'>
+                <div className='subContainer'>
+                    <DefaultMap />
+                </div>
+                <div className='subContainer'>
+                    Basic Map.
                 </div>
             </div>
             <div className='mainContainer' />

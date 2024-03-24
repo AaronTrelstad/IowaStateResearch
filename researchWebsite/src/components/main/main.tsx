@@ -44,7 +44,6 @@ export default function Main() {
                     Map showing heatmap using Mapbox Studio Custom Styles.
                 </div>
             </div>
-            <div className='mainContainer' />
             <div className='mainContainer'>
                 <div className='subContainer'>
                     <DefaultMap />

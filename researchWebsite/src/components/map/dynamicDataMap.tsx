@@ -1,6 +1,10 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import dynamicMapData from '../../assets/mapData/dynamicMap.json';
+import { TbPlayerPlayFilled } from "react-icons/tb";
+import { TbPlayerSkipForwardFilled } from "react-icons/tb";
+import { TbPlayerSkipBackFilled } from "react-icons/tb";
+import { TbPlayerPauseFilled } from "react-icons/tb";
 import '../main/main.css';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiYWFyb250cmVsc3RhZCIsImEiOiJjbHRyaW16YnkwN3dmMmxwaWwyODljZnFmIn0.nzXluM3BCOrEu5_Xx-2deA';
@@ -46,8 +50,6 @@ const DynamicDataMap = () => {
 
     }, []);
 
-
-
     const play = useCallback(() => {
         setPlaying(true);
         const intervalId = setInterval(() => {
@@ -70,8 +72,6 @@ const DynamicDataMap = () => {
 
         return () => clearInterval(intervalId);
     }, []);
-
-
 
     useEffect(() => {
         if (map && dynamicMapData[currentIndex]) {
@@ -215,11 +215,37 @@ const DynamicDataMap = () => {
 
     return (
         <>
-            <div ref={mapContainer} className='subContainer' />
-            <div className='controlContainer'>
-                <button className='controlButton' onClick={backward}>Backward</button>
-                {isPlaying ? (<button className='controlButton' onClick={pause}>Pause</button>) : (<button className='controlButton' onClick={play}>Play</button>)}
-                <button className='controlButton' onClick={forward}>Forward</button>
+            <div className='mainContainer'>
+                <div className='subContainer'>
+                    <div ref={mapContainer} className='subContainer' />
+                    <div className='controlContainer'>
+                        <TbPlayerSkipBackFilled className='controlButton' onClick={backward}>Backward</TbPlayerSkipBackFilled>
+                        {isPlaying ? (<TbPlayerPauseFilled className='controlButton' onClick={pause}>Pause</TbPlayerPauseFilled>) : (<TbPlayerPlayFilled className='controlButton' onClick={play}>Play</TbPlayerPlayFilled>)}
+                        <TbPlayerSkipForwardFilled className='controlButton' onClick={forward}>Forward</TbPlayerSkipForwardFilled>
+                    </div>
+                </div>
+                <div className='subContainer'>
+                    <table className="displayContainer">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Outage</th>
+                                <th>Connections</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {dynamicMapData[currentIndex] && dynamicMapData[currentIndex].map((dataItem: any, index: number) => (
+                                <tr key={index}>
+                                    <td>{dataItem.name}</td>
+                                    <td>{dataItem.outage ? 'Yes' : 'No'}</td>
+                                    <td>{dataItem.connections.join(', ')}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+
+
             </div>
         </>
     );

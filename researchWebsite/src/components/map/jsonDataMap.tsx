@@ -25,7 +25,7 @@ const JSONDataMap: React.FC = () => {
             .setLngLat([lng, lat])
             .addTo(map)
             .setPopup(new mapboxgl.Popup().setHTML(
-                `<h3>${plant.name}</h3>
+              `<h3>${plant.name}</h3>
                 <h4>Location: ${plant.location}</h4>
                 <h4>Power Level: ${plant.powerLevel}</h4>
                 <h4>Outage Status: ${plant.outage}</h4>`
@@ -72,7 +72,35 @@ const JSONDataMap: React.FC = () => {
     }
   }, []);
 
-  return <div ref={mapContainer} className='subContainer' />;
+  return (
+    <div className='mainContainer'>
+      <div className='subContainer'>
+        < div ref={mapContainer} className='subContainer' />
+      </div>
+      <div className='subContainer'>
+        <table className="displayContainer">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Outage</th>
+              <th>Power Level</th>
+              <th>Connections</th>
+            </tr>
+          </thead>
+          <tbody>
+            {plantLocations && plantLocations.map((dataItem: any, index: number) => (
+              <tr key={index}>
+                <td>{dataItem.name}</td>
+                <td>{dataItem.outage ? 'Yes' : 'No'}</td>
+                <td>{dataItem.powerLevel}</td>
+                <td>{dataItem.connections.join(', ')}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 };
 
 export default JSONDataMap;

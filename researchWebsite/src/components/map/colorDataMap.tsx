@@ -22,7 +22,16 @@ const ColorDataMap: React.FC = () => {
             return () => map.remove();
         }
     }, []);
-    return <div ref={mapContainer} className='subContainer' />;
+    return (
+        <div className='mainContainer'>
+            <div className='subContainer'>
+                <div ref={mapContainer} className='subContainer' />
+            </div>
+            <div className='subContainer'>
+                Map showing heatmap using Mapbox Studio Custom Styles.
+            </div>
+        </div>
+    );
 }
 
 export default ColorDataMap;

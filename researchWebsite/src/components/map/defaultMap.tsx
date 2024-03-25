@@ -24,7 +24,15 @@ const DefaultMap: React.FC = () => {
   }, []);
 
   return (
-    <div ref={mapContainer} className='subContainer'/>
+    <div className='mainContainer'>
+      <div className='subContainer'>
+        <div ref={mapContainer} className='subContainer' />
+      </div>
+      <div className='subContainer'>
+        Basic Map.
+      </div>
+    </div>
+
   );
 };
 

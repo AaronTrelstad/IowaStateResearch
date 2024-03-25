@@ -39,7 +39,16 @@ const CSVDataMap: React.FC = () => {
         }
     }, []);
 
-    return <div ref={mapContainer} className='subContainer' />;
+    return (
+        <div className='mainContainer'>
+            <div className='subContainer'>
+                <div ref={mapContainer} className='subContainer' />
+            </div>
+            <div className='subContainer'>
+                Map of Airports using CSV data, displayed with Mapbox Studio Tileset.
+            </div>
+        </div>
+    );
 };
 
 export default CSVDataMap;

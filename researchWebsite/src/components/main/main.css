@@ -17,3 +17,16 @@
     margin-top: 10%;
     text-align: center;
 }
+
+.controlContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.controlButton {
+    margin: 2px;
+    background-color: rgba(255, 82, 82, 0.2);
+    border-width: 1px;
+    border-color: black;
+}

@@ -88,8 +88,12 @@ const DynamicDataMap = () => {
         indexDisplay.style.position = 'absolute';
         indexDisplay.style.top = '10px';
         indexDisplay.style.right = '10px';
+        indexDisplay.style.fontSize = '18px';
+        indexDisplay.style.backgroundColor = 'white';
+        indexDisplay.style.padding = '5px';
+        indexDisplay.style.borderRadius = '5px'
     
-        indexDisplay.innerText = `Current Timestamp: ${currentIndex + 1}`;
+        indexDisplay.innerText = `Timestamp: ${currentIndex + 1}`;
     
         if (mapContainer.current) {
             mapContainer.current.appendChild(indexDisplay);
@@ -192,9 +196,9 @@ const DynamicDataMap = () => {
         <>
             <div ref={mapContainer} className='subContainer' />
             <div className='controlContainer'>
-                <button onClick={backward}>Backward</button>
-                {isPlaying ? (<button onClick={pause}>Pause</button>) : (<button onClick={play}>Play</button>)}
-                <button onClick={forward}>Forward</button>
+                <button className='controlButton' onClick={backward}>Backward</button>
+                {isPlaying ? (<button className='controlButton' onClick={pause}>Pause</button>) : (<button className='controlButton' onClick={play}>Play</button>)}
+                <button className='controlButton' onClick={forward}>Forward</button>
             </div>
         </>
     );

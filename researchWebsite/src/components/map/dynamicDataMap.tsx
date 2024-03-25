@@ -22,36 +22,57 @@ const DynamicDataMap = () => {
 
     const backward = useCallback(() => {
         pause();
-        if (currentIndexRef.current > 0) {
-            setCurrentIndex(index => index - 1);
-        }
+        setCurrentIndex(index => {
+            const nextIndex = index - 1;
+            if (nextIndex < 0) {
+                return dynamicMapData.length - 1;
+            } else {
+                return nextIndex;
+            }
+        });
+
     }, []);
 
     const forward = useCallback(() => {
         pause();
-        if (currentIndexRef.current < dynamicMapData.length - 1) {
-            setCurrentIndex(index => index + 1);
-        }
+        setCurrentIndex(index => {
+            const nextIndex = index + 1;
+            if (nextIndex >= dynamicMapData.length - 1) {
+                return 0;
+            } else {
+                return nextIndex;
+            }
+        });
+
     }, []);
+
+
 
     const play = useCallback(() => {
         setPlaying(true);
         const intervalId = setInterval(() => {
             setPlaying(playing => {
-                if (currentIndexRef.current < dynamicMapData.length - 1 && playing) {
-                    setCurrentIndex(index => index + 1);
+                if (playing) {
+                    setCurrentIndex(index => {
+                        const nextIndex = index + 1;
+                        if (nextIndex >= dynamicMapData.length) {
+                            return 0;
+                        } else {
+                            return nextIndex;
+                        }
+                    });
                 } else {
-                    pause();
                     clearInterval(intervalId);
                 }
                 return playing;
             });
         }, 1000);
-    
+
         return () => clearInterval(intervalId);
     }, []);
-    
-    
+
+
+
     useEffect(() => {
         if (map && dynamicMapData[currentIndex]) {
             map.on('load', () => {
@@ -92,13 +113,13 @@ const DynamicDataMap = () => {
         indexDisplay.style.backgroundColor = 'white';
         indexDisplay.style.padding = '5px';
         indexDisplay.style.borderRadius = '5px'
-    
-        indexDisplay.innerText = `Timestamp: ${currentIndex + 1}`;
-    
+
+        indexDisplay.innerText = `Timestamp: ${currentIndex + 1}/${dynamicMapData.length} `;
+
         if (mapContainer.current) {
             mapContainer.current.appendChild(indexDisplay);
         }
-    
+
         return () => {
             if (mapContainer.current && indexDisplay.parentNode === mapContainer.current) {
                 mapContainer.current.removeChild(indexDisplay);

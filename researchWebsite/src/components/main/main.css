@@ -28,7 +28,7 @@
 .controlButton {
     margin: 2px;
     border-width: 1px;
-    background-color: white;
+    background-color: rgb(227, 227, 227);
     border-color: black;
     border-radius: 3px;
     width: 2rem;
@@ -36,6 +36,7 @@
 
 .controlButton:hover {
     cursor: pointer;
+    background-color: lightgray;
 }
 
 .displayContainer {

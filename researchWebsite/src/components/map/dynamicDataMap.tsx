@@ -135,6 +135,7 @@ const DynamicDataMap = () => {
             timeData.forEach((plant) => {
                 const plantLayerId = `${plant.name}-circle-${currentIndex}`;
                 const plantColor = plant.outage ? 'red' : 'green';
+
                 map.addLayer({
                     id: plantLayerId,
                     type: 'circle',

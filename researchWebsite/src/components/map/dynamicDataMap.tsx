@@ -134,6 +134,7 @@ const DynamicDataMap = () => {
             const timeData = dynamicMapData[currentIndex];
             timeData.forEach((plant) => {
                 const plantLayerId = `${plant.name}-circle-${currentIndex}`;
+                const labelLayerId = `${plant.name}-labels-${currentIndex}`;
                 const plantColor = plant.outage ? 'red' : 'green';
 
                 map.addLayer({
@@ -158,6 +159,32 @@ const DynamicDataMap = () => {
                         'circle-radius': 8,
                         'circle-color': plantColor
                     }
+                });
+
+                map.addLayer({
+                    id: labelLayerId,
+                    type: 'symbol',
+                    source: {
+                        type: 'geojson',
+                        data: {
+                            type: 'Feature',
+                            geometry: {
+                                type: 'Point',
+                                coordinates: plant.location
+                            },
+                            properties: {},
+                        },                        
+                    },
+                    layout: {
+                        'text-field': plant.name,
+                        'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
+                        'text-radial-offset': 0.5,
+                        'text-justify': 'auto',
+                        'text-allow-overlap': true
+                    },
+                    paint: {
+                        "text-opacity": 1
+                    },
                 });
 
                 plant.connections.forEach((connectedPlantName: string) => {
@@ -200,7 +227,7 @@ const DynamicDataMap = () => {
             const mapLayers = map.getStyle().layers;
             if (mapLayers) {
                 mapLayers.forEach((layer) => {
-                    if (layer.id.includes('-circle-') || layer.id.includes('-line-')) {
+                    if (layer.id.includes('-circle-') || layer.id.includes('-line-') || layer.id.includes('-labels-')) {
                         if (map.getLayer(layer.id)) {
                             map.removeLayer(layer.id);
                         }

@@ -9,6 +9,9 @@ export default function Header() {
                     <h1 className='mainHeaderText'>Iowa State Research</h1>
                 </Link>
                 <div className='button-container'>
+                    <Link to="/queries" className='button'>
+                        <h2 className='buttonHeaderText'>CustomQuery</h2>
+                    </Link>
                     <Link to="/publications" className="button">
                         <h2 className='buttonHeaderText'>Publications</h2>
                     </Link>

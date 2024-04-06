@@ -1,0 +1,235 @@
+{
+    "plants": [
+        {
+            "name": "Plant 1",
+            "location": [
+                -90,
+                41
+            ],
+            "outage": true
+        },
+        {
+            "name": "Plant 2",
+            "location": [
+                -92,
+                43
+            ],
+            "outage": false
+        }
+    ],
+    "homes": {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "Home 1",
+                    "powerProvider": "Plant 1"
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        -90.1,
+                        40.9
+                    ]
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "Home 2",
+                    "powerProvider": "Plant 1"
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        -90.1,
+                        41.15
+                    ]
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "Home 3",
+                    "powerProvider": "Plant 1"
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        -90.15,
+                        41.15
+                    ]
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "Home 2",
+                    "powerProvider": "Plant 1"
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        -89.95,
+                        41.15
+                    ]
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "Home 5",
+                    "powerProvider": "Plant 1"
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        -89.9,
+                        41.2
+                    ]
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "Home 2",
+                    "powerProvider": "Plant 1"
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        -89.97,
+                        41
+                    ]
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "Home 2",
+                    "powerProvider": "Plant 1"
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        -89,
+                        41.2
+                    ]
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "Home 2",
+                    "powerProvider": "Plant 1"
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        -90.1,
+                        41.3
+                    ]
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "Home 2",
+                    "powerProvider": "Plant 1"
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        -90.2,
+                        41.5
+                    ]
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "Home 2",
+                    "powerProvider": "Plant 1"
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        -90.6,
+                        41.4
+                    ]
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "Home 2",
+                    "powerProvider": "Plant 1"
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        -90.35,
+                        41.8
+                    ]
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "Home 2",
+                    "powerProvider": "Plant 1"
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        -90.29,
+                        41.55
+                    ]
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "Home 2",
+                    "powerProvider": "Plant 1"
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        -90.74,
+                        40.93
+                    ]
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "Home 2",
+                    "powerProvider": "Plant 1"
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        -89.9,
+                        42
+                    ]
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "Home 2",
+                    "powerProvider": "Plant 1"
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        -89.99,
+                        41.19
+                    ]
+                }
+            }
+        ]
+    }
+}

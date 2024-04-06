@@ -2,6 +2,7 @@ import Main from './components/main/main'
 import Datasets from './components/datasets/datasets';
 import Publications from './components/publications/publications';
 import Faculty from './components/faculty/faculty';
+import Queries from './components/queries/queries';
 
 import {
   BrowserRouter,
@@ -15,6 +16,7 @@ export default function App() {
       <Routes>
         <Route index element={<Main />} />
         <Route path='/' element={<Main />}></Route> 
+        <Route path='/queries' element={<Queries />}></Route>
         <Route path='/datasests' element={<Datasets />}></Route>
         <Route path='/publications' element={<Publications />}></Route>
         <Route path='/faculty' element={<Faculty />}></Route>

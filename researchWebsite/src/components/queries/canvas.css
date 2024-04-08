@@ -1,0 +1,88 @@
+.canvasContainer {
+    display: flex;
+    justify-content: center;
+    width: 90%;
+    height: auto;
+    margin: 2rem;
+    margin-top: 5%;
+    position: relative;
+}
+
+.mapContainer {
+    flex: 3;
+    padding: 20px;
+    height: 300px;
+}
+
+.optionsContainer {
+    flex: 1;
+    background: rgb(230, 230, 230);
+    position: relative;
+}
+
+.dropDownTitle {
+    position: absolute;
+    left: 2%;
+    top: 2%;
+}
+
+.dropDown {
+    position: absolute;
+    right: 2%;
+    top: 2%;
+}
+
+.dropDown:hover {
+    cursor: pointer;
+}
+
+.dropDownContainer {
+    position: relative;
+    height: 2rem;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.saveOptionsButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 14px;
+    background-color: rgb(174, 174, 174);
+    color: #fff;
+    text-decoration: none;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 10rem;
+}
+
+.saveOptionsButton:hover {
+    background-color: rgb(136, 136, 136);
+}
+
+.tabs {
+    display: flex;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 0.5rem;
+}
+
+.tabs button {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    font-size: 16px;
+    outline: none;
+}
+
+.tabs button.active {
+    background-color: #f0f0f0; 
+}

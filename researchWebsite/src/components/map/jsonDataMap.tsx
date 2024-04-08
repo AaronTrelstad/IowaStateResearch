@@ -74,9 +74,8 @@ const JSONDataMap: React.FC = () => {
 
   return (
     <div className='mainContainer'>
-      <div className='subContainer'>
-        < div ref={mapContainer} className='subContainer' />
-      </div>
+      
+       <div ref={mapContainer} className='subContainer' />
       <div className='subContainer'>
         <table className="displayContainer">
           <thead>

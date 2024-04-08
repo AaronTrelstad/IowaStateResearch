@@ -1,4 +1,5 @@
 import Header from "../header/header"
+import Canvas from "./canvas"
 import './queries.css'
 
 const Queries = () => {
@@ -7,7 +8,8 @@ const Queries = () => {
             <Header />
             <h1 className="queriesTitle">Interactive Visualizer</h1>
             <div>
-                
+                <Canvas />
+
             </div>
             <p>Allow users to select map types/features and upload datasets they can load datasets that are already being stored</p>
             <p>Users can download files from the PostgreSQL database in the datasets tab</p>

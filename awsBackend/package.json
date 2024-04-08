@@ -1,0 +1,10 @@
+{
+  "name": "awsBackend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.137",
+    "aws-sdk": "^2.1594.0"
+  }
+}

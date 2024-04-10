@@ -11,9 +11,7 @@ const Queries = () => {
                 <Canvas />
 
             </div>
-            <p>Allow users to select map types/features and upload datasets they can load datasets that are already being stored</p>
-            <p>Users can download files from the PostgreSQL database in the datasets tab</p>
-            <p>Also add in features to see areas that need to most help</p>
+            <p>Datasets stored using AWS DynamoDB and AWS S3. Uses AWS Lambdas functions for tasks.</p>
         </>
     )
 }

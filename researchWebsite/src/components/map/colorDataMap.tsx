@@ -112,8 +112,6 @@ const ColorDataMap: React.FC = () => {
                 borders.push([minX + (minX * extendPercentage), minY - (minY * extendPercentage)]);
                 borders.push([minX + (minX * extendPercentage), maxY + (maxY * extendPercentage)]);
                 borders.push([maxX - (maxX * extendPercentage), maxY + (maxY * extendPercentage)]);
-
-                console.log([plant.name, borders])
                 
 
                 if (plant.outage) {

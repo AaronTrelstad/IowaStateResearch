@@ -146,6 +146,8 @@ const ColorDataMap: React.FC = () => {
                     }
                 });
 
+                console.log(borders)
+
                 map.addLayer({
                     id: `plantBorders-${plant.name}`,
                     type: "line",

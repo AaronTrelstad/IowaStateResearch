@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import mapboxgl from 'mapbox-gl';
+import { Position } from 'geojson';
 import axios from 'axios';
 import './canvas.css';
 
@@ -10,11 +11,12 @@ const Canvas = () => {
     const [mapStyle, setMapStyle] = useState<string>('mapbox://styles/mapbox/standard');
     const [map, setMap] = useState<mapboxgl.Map | null>(null);
     const [color, setColor] = useState<string>("red");
-    const [datasetName, setDatasetName] = useState<string>('AirportData');
+    const [datasetName, setDatasetName] = useState<string>('');
     const [activeTab, setActiveTab] = useState<string>('styles');
-    const [numValues, setNumValues] = useState<number>(100);
-    const [borders, setBorders] = useState<boolean>(false);
+    const [maxValues, setMaxValues] = useState<number>(1000);
+    const [addBorder, setAddBorder] = useState<boolean>(false);
     const [schema, setSchema] = useState<{ [key: string]: string }>({});
+    const [numValues, setNumValues] = useState<number>(0);
 
     useEffect(() => {
         if (mapContainer.current) {
@@ -35,6 +37,10 @@ const Canvas = () => {
         }
     }, [mapContainer, mapStyle]);
 
+    useEffect(() => {
+        retrieveData(datasetName);
+    }, [color, addBorder, map])
+
     const getDataSchema = (data: any): { [key: string]: string } => {
         const schema: { [key: string]: string } = {};
 
@@ -54,7 +60,7 @@ const Canvas = () => {
             const response = await axios.get(`https://krpaslyj9k.execute-api.us-east-2.amazonaws.com/prod/getData?tableName=${datasetName}`);
             const data = response.data;
             addLayers(data);
-            
+
             const schema = getDataSchema(data[0]);
             setSchema(schema);
         } catch (error) {
@@ -62,39 +68,94 @@ const Canvas = () => {
         }
     };
 
-    const handleSubmit = () => {
-        
-    };
-
     const addLayers = (data: any) => {
         if (map) {
             removeLayers();
+
+            let count = 0
+
+            let maxLat = -200;
+            let maxLong = -200;
+            let minLat = 200;
+            let minLong = 200;
+            let borders: Position[] = [];
+            const extendPercentage = 0.005
 
             data.forEach((location: any, index: number) => {
                 const id = `${index}-circle`;
                 const latitude = parseFloat(location.latitude.S);
                 const longitude = parseFloat(location.longitude.S);
 
+                if (latitude > maxLat) {
+                    maxLat = latitude;
+                } else if (latitude < minLat) {
+                    minLat = latitude;
+                }
+
+                if (longitude > maxLong) {
+                    maxLong = longitude;
+                } else if (longitude < minLong) {
+                    minLong = longitude;
+                }
+
+                if (-180 < longitude && 180 > longitude && -180 < latitude && 180 > latitude) {
+                    map.addLayer({
+                        id: id,
+                        type: "circle",
+                        source: {
+                            type: 'geojson',
+                            data: {
+                                type: 'Feature',
+                                geometry: {
+                                    type: 'Point',
+                                    coordinates: [longitude, latitude]
+                                },
+                                properties: {}
+                            }
+                        },
+                        paint: {
+                            'circle-radius': 8,
+                            'circle-color': color
+                        }
+                    })
+                }
+
+                count++;
+            });
+
+            borders.push([maxLong - (maxLong * extendPercentage), maxLat + (maxLat * extendPercentage)]);
+            borders.push([maxLong - (maxLong * extendPercentage), minLat - (minLat * extendPercentage)]);
+            borders.push([minLong + (minLong * extendPercentage), minLat - (minLat * extendPercentage)]);
+            borders.push([minLong + (minLong * extendPercentage), maxLat + (maxLat * extendPercentage)]);
+            borders.push([maxLong - (maxLong * extendPercentage), maxLat + (maxLat * extendPercentage)]);
+
+            if (addBorder) {
                 map.addLayer({
-                    id: id,
-                    type: "circle",
+                    id: `Borders-${count}-lines`,
+                    type: "line",
                     source: {
                         type: 'geojson',
                         data: {
                             type: 'Feature',
                             geometry: {
-                                type: 'Point',
-                                coordinates: [longitude, latitude]
+                                type: 'LineString',
+                                coordinates: borders
                             },
                             properties: {}
                         }
                     },
+                    layout: {
+                        'line-join': 'round',
+                        'line-cap': 'round',
+                    },
                     paint: {
-                        'circle-radius': 8,
-                        'circle-color': color
-                    }
+                        'line-color': "black",
+                        'line-width': 2,
+                    },
                 })
-            });
+            }
+
+            setNumValues(count);
         }
     };
 
@@ -103,7 +164,7 @@ const Canvas = () => {
             const mapLayers = map.getStyle().layers;
             if (mapLayers) {
                 mapLayers.forEach((layer) => {
-                    if (layer.id.includes('-circle') || layer.id.includes('-line') || layer.id.includes('-labels')) {
+                    if (layer.id.includes('-circle') || layer.id.includes('-lines') || layer.id.includes('-labels')) {
                         if (map.getLayer(layer.id)) {
                             map.removeLayer(layer.id);
                         }
@@ -163,8 +224,10 @@ const Canvas = () => {
                         <div className='dropDownContainer'>
                             <label className='dropDownTitle'>Dataset</label>
                             <select className='dropDown' id="dataset" onChange={(e) => setDatasetName(e.target.value)}>
+                                <option>--Datasets--</option>
                                 <option value={"AirportData"}>Airport Data</option>
                                 <option value={"timeSeries"}>Time Series</option>
+                                <option value={"QueryPoints"}>Query Points</option>
                             </select>
                         </div>
                         <div className='buttonContainer'>
@@ -186,34 +249,31 @@ const Canvas = () => {
                 {activeTab === 'query' && (
                     <>
                         <div className='dropDownContainer'>
-                            <label className='dropDownTitle'>Num Values</label>
-                            <input 
+                            <label className='dropDownTitle'>Max Values Displayed</label>
+                            <input
                                 type='number'
                                 className='dropDown'
-                                value={numValues} 
-                                onChange={(e) => setNumValues(Number(e.target.value))}
+                                value={maxValues}
+                                onChange={(e) => setMaxValues(Number(e.target.value))}
                                 placeholder="Num Values"
                             />
                         </div>
                         <div className='dropDownContainer'>
                             <label className='dropDownTitle'>Borders</label>
-                            <input 
+                            <input
                                 type='checkbox'
-                                className='dropDown' 
-                                checked={borders}
-                                onChange={(e) => setBorders(e.target.checked)}
+                                className='dropDown'
+                                checked={addBorder}
+                                onChange={(e) => setAddBorder(e.target.checked)}
                             />
-                        </div>
-                        <div className='buttonContainer'>
-                            <button className='saveOptionsButton' onClick={handleSubmit}>Submit</button>
                         </div>
                     </>
                 )}
                 {activeTab === 'stats' && (
                     <>
-                        <div>
-                            Display Stats
-                        </div>                    
+                        <div className='statsContainer'>
+                            <h3>Total Values: {numValues}</h3>
+                        </div>
                     </>
                 )}
             </div>

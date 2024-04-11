@@ -22,6 +22,7 @@ const Canvas = () => {
     const [addDensityBorder, setAddDensityBorder] = useState<boolean>(false);
     const [startingLat, setStartingLat] = useState<number>(42);
     const [startingLong, setStartingLong] = useState<number>(-92);
+    const [startingZoom, setStartingZoom] = useState<number>(5);
 
     let densityExtension: number;
 
@@ -31,7 +32,7 @@ const Canvas = () => {
                 container: mapContainer.current,
                 style: mapStyle,
                 center: [startingLong, startingLat],
-                zoom: 5
+                zoom: startingZoom
             });
 
             newMap.addControl(new mapboxgl.NavigationControl(), "top-left");
@@ -279,7 +280,7 @@ const Canvas = () => {
                     <button className={activeTab === 'datasets' ? 'active' : ''} onClick={() => handleTabChange('datasets')}>Dataset</button>
                     <button className={activeTab === 'styles' ? 'active' : ''} onClick={() => handleTabChange('styles')}>Styles</button>
                     <button className={activeTab === 'query' ? 'active' : ''} onClick={() => handleTabChange('query')}>Query</button>
-                    <button className={activeTab === 'stats' ? 'active' : ''} onClick={() => handleTabChange('stats')}>Stats</button>
+                    <button className={activeTab === 'info' ? 'active' : ''} onClick={() => handleTabChange('info')}>Info</button>
                 </div>
                 {activeTab === 'datasets' && (
                     <>
@@ -384,6 +385,16 @@ const Canvas = () => {
                             />
                         </div>
                         <div className='dropDownContainer'>
+                            <label className='dropDownTitle'>Zoom</label>
+                            <input
+                                type='number'
+                                className='dropDown'
+                                value={startingZoom}
+                                onChange={(e) => setStartingZoom(Number(e.target.value))}
+                                placeholder='5'
+                            />
+                        </div>
+                        <div className='dropDownContainer'>
                             <label className='dropDownTitle'>Set Data Radius (mi)</label>
                             <input
                                 type='number'
@@ -405,9 +416,9 @@ const Canvas = () => {
                         </div>
                     </>
                 )}
-                {activeTab === 'stats' && (
+                {activeTab === 'info' && (
                     <>
-                        <div className='statsContainer'>
+                        <div className='infoContainer'>
                             <h3>Total Values: {numValues}</h3>
                         </div>
                     </>

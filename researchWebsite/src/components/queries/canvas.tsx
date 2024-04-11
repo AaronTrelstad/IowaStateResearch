@@ -12,11 +12,15 @@ const Canvas = () => {
     const [map, setMap] = useState<mapboxgl.Map | null>(null);
     const [color, setColor] = useState<string>("red");
     const [datasetName, setDatasetName] = useState<string>('');
-    const [activeTab, setActiveTab] = useState<string>('styles');
+    const [activeTab, setActiveTab] = useState<string>('datasets');
     const [maxValues, setMaxValues] = useState<number>(1000);
     const [addBorder, setAddBorder] = useState<boolean>(false);
     const [schema, setSchema] = useState<{ [key: string]: string }>({});
     const [numValues, setNumValues] = useState<number>(0);
+    const [dataRadius, setDataRadius] = useState<number>(1000);
+    const [lineColor, setLineColor] = useState<string>("black")
+    const [addDensityBorder, setAddDensityBorder] = useState<boolean>(false);
+    let densityExtension: number;
 
     useEffect(() => {
         if (mapContainer.current) {
@@ -38,8 +42,10 @@ const Canvas = () => {
     }, [mapContainer, mapStyle]);
 
     useEffect(() => {
-        retrieveData(datasetName);
-    }, [color, addBorder, map])
+        if (datasetName != '') {
+            retrieveData(datasetName);
+        }
+    }, [color, lineColor, addBorder, addDensityBorder, map])
 
     const getDataSchema = (data: any): { [key: string]: string } => {
         const schema: { [key: string]: string } = {};
@@ -79,6 +85,7 @@ const Canvas = () => {
             let minLat = 200;
             let minLong = 200;
             let borders: Position[] = [];
+            let denseBorders: Position[] = [];
             const extendPercentage = 0.005
 
             data.forEach((location: any, index: number) => {
@@ -123,6 +130,8 @@ const Canvas = () => {
                 count++;
             });
 
+            densityExtension = (maxLat - minLat) * 0.005;
+
             borders.push([maxLong - (maxLong * extendPercentage), maxLat + (maxLat * extendPercentage)]);
             borders.push([maxLong - (maxLong * extendPercentage), minLat - (minLat * extendPercentage)]);
             borders.push([minLong + (minLong * extendPercentage), minLat - (minLat * extendPercentage)]);
@@ -149,7 +158,35 @@ const Canvas = () => {
                         'line-cap': 'round',
                     },
                     paint: {
-                        'line-color': "black",
+                        'line-color': lineColor,
+                        'line-width': 2,
+                    },
+                })
+            }
+
+            if (addDensityBorder) {
+                denseBorders = calculateDenseArea(data);
+
+                map.addLayer({
+                    id: `Density-${count}-lines`,
+                    type: "line",
+                    source: {
+                        type: 'geojson',
+                        data: {
+                            type: 'Feature',
+                            geometry: {
+                                type: 'LineString',
+                                coordinates: denseBorders
+                            },
+                            properties: {}
+                        }
+                    },
+                    layout: {
+                        'line-join': 'round',
+                        'line-cap': 'round',
+                    },
+                    paint: {
+                        'line-color': lineColor,
                         'line-width': 2,
                     },
                 })
@@ -158,6 +195,52 @@ const Canvas = () => {
             setNumValues(count);
         }
     };
+
+    const calculateDenseArea = (data: any) => {
+        let dense: Position = [];
+        let dataRectangles: Position[] = [];
+        let result: Position[] = [];
+
+        data.forEach((location: any) => {
+            const latitude = parseFloat(location.latitude.S);
+            const longitude = parseFloat(location.longitude.S);
+
+            dataRectangles.push([
+                longitude + (longitude * densityExtension),
+                longitude - (longitude * densityExtension),
+                latitude + (latitude * densityExtension),
+                latitude - (latitude * densityExtension)
+            ])
+        });
+
+        let maxMatches = 0;
+        dataRectangles.forEach((box) => {
+            let matches = 0;
+            dataRectangles.forEach((compareBox) => {
+                if (
+                    (compareBox[0] > box[0] && compareBox[0] < box[1]) ||
+                    (compareBox[1] > box[0] && compareBox[1] < box[1]) ||
+                    (compareBox[2] < box[3] && compareBox[2] > box[2]) ||
+                    (compareBox[3] < box[2] && compareBox[0] > box[3])
+                ) {
+                    matches++;
+                }
+            })
+
+            if(matches > maxMatches) {
+                maxMatches = matches;
+                dense = box
+            }
+        })
+
+        result.push([dense[0], dense[2]]);
+        result.push([dense[0], dense[3]]);
+        result.push([dense[1], dense[3]]);
+        result.push([dense[1], dense[2]]);
+        result.push([dense[0], dense[2]]);
+
+        return result;
+    }
 
     const removeLayers = () => {
         if (map && map.getStyle()) {
@@ -187,16 +270,40 @@ const Canvas = () => {
             <div ref={mapContainer} className='mapContainer' />
             <div className="optionsContainer">
                 <div className="tabs">
-                    <button className={activeTab === 'styles' ? 'active' : ''} onClick={() => handleTabChange('styles')}>Styles</button>
                     <button className={activeTab === 'datasets' ? 'active' : ''} onClick={() => handleTabChange('datasets')}>Dataset</button>
+                    <button className={activeTab === 'styles' ? 'active' : ''} onClick={() => handleTabChange('styles')}>Styles</button>
                     <button className={activeTab === 'query' ? 'active' : ''} onClick={() => handleTabChange('query')}>Query</button>
                     <button className={activeTab === 'stats' ? 'active' : ''} onClick={() => handleTabChange('stats')}>Stats</button>
                 </div>
+                {activeTab === 'datasets' && (
+                    <>
+                        <div className='dropDownContainer'>
+                            <label className='dropDownTitle'>Dataset</label>
+                            <select className='dropDown' id="dataset" onChange={(e) => setDatasetName(e.target.value)}>
+                                <option>---Datasets---</option>
+                                <option value={"AirportData"}>Airport Data</option>
+                                <option value={"timeSeries"}>Time Series</option>
+                                <option value={"QueryPoints"}>Query Points</option>
+                            </select>
+                        </div>
+
+                        <div className='buttonContainer'>
+                            <button className='saveOptionsButton' onClick={() => retrieveData(datasetName)}>Load Datasets</button>
+                        </div>
+                        {Object.keys(schema).length > 0 && (
+                            <div className="schemaContainer">
+                                <h3>Data Schema:</h3>
+                                <pre>{JSON.stringify(schema, null, 2)}</pre>
+                            </div>
+                        )}
+                    </>
+                )}
                 {activeTab === 'styles' && (
                     <>
                         <div className='dropDownContainer'>
                             <label className='dropDownTitle'>Map Style</label>
                             <select className='dropDown' id="mapStyle" onChange={(e) => setMapStyle(e.target.value)}>
+                                <option>-------Styles-------</option>
                                 <option value="mapbox://styles/mapbox/standard">Standard</option>
                                 <option value="mapbox://styles/mapbox/streets-v12">Streets</option>
                                 <option value="mapbox://styles/mapbox/outdoors-v12">Outdoors</option>
@@ -211,43 +318,47 @@ const Canvas = () => {
                         <div className='dropDownContainer'>
                             <label className='dropDownTitle'>Color</label>
                             <select className='dropDown' id="dataColor" onChange={(e) => setColor(e.target.value)}>
+                                <option>--Colors--</option>
                                 <option value="red">Red</option>
                                 <option value="yellow">Yellow</option>
                                 <option value="green">Green</option>
                                 <option value="blue">Blue</option>
+                                <option value="purple">Purple</option>
                             </select>
                         </div>
-                    </>
-                )}
-                {activeTab === 'datasets' && (
-                    <>
                         <div className='dropDownContainer'>
-                            <label className='dropDownTitle'>Dataset</label>
-                            <select className='dropDown' id="dataset" onChange={(e) => setDatasetName(e.target.value)}>
-                                <option>--Datasets--</option>
-                                <option value={"AirportData"}>Airport Data</option>
-                                <option value={"timeSeries"}>Time Series</option>
-                                <option value={"QueryPoints"}>Query Points</option>
+                            <label className='dropDownTitle'>Line Color</label>
+                            <select className='dropDown' id="dataColor" onChange={(e) => setLineColor(e.target.value)}>
+                                <option>--Colors--</option>
+                                <option value="black">Black</option>
+                                <option value="white">White</option>
+                                <option value="red">Red</option>
+                                <option value="green">Green</option>
+                                <option value="yellow">Yellow</option>
                             </select>
                         </div>
-                        <div className='buttonContainer'>
-                            <form>
-                                <input type="file" />
-                            </form>
-                        </div>
-                        <div className='buttonContainer'>
-                            <button className='saveOptionsButton' onClick={() => retrieveData(datasetName)}>Load Datasets</button>
-                        </div>
-                        {Object.keys(schema).length > 0 && (
-                            <div className="schemaContainer">
-                                <h3>Data Schema:</h3>
-                                <pre>{JSON.stringify(schema, null, 2)}</pre>
-                            </div>
-                        )}
                     </>
                 )}
                 {activeTab === 'query' && (
                     <>
+                        <div className='dropDownContainer'>
+                            <label className='dropDownTitle'>Borders</label>
+                            <input
+                                type='checkbox'
+                                className='dropDown'
+                                checked={addBorder}
+                                onChange={(e) => setAddBorder(e.target.checked)}
+                            />
+                        </div>
+                        <div className='dropDownContainer'>
+                            <label className='dropDownTitle'>Mark Dense Areas</label>
+                            <input
+                                type='checkbox'
+                                className='dropDown'
+                                checked={addDensityBorder}
+                                onChange={(e) => setAddDensityBorder(e.target.checked)}
+                            />
+                        </div>
                         <div className='dropDownContainer'>
                             <label className='dropDownTitle'>Max Values Displayed</label>
                             <input
@@ -259,12 +370,12 @@ const Canvas = () => {
                             />
                         </div>
                         <div className='dropDownContainer'>
-                            <label className='dropDownTitle'>Borders</label>
+                            <label className='dropDownTitle'>Set Data Radius</label>
                             <input
-                                type='checkbox'
+                                type='number'
                                 className='dropDown'
-                                checked={addBorder}
-                                onChange={(e) => setAddBorder(e.target.checked)}
+                                value={dataRadius}
+                                onChange={(e) => setDataRadius(Number(e.target.value))}
                             />
                         </div>
                     </>

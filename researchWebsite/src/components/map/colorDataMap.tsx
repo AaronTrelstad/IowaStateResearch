@@ -121,8 +121,6 @@ const ColorDataMap: React.FC = () => {
                     results.push({ plantName: plant.name, numOutages: 0 })
                 }
 
-                
-
                 map.addLayer({
                     id: plantLayerId,
                     type: 'circle',
@@ -145,8 +143,6 @@ const ColorDataMap: React.FC = () => {
                         'circle-color': plantColor
                     }
                 });
-
-                console.log(borders)
 
                 map.addLayer({
                     id: `plantBorders-${plant.name}`,

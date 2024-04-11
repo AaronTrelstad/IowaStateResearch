@@ -44,6 +44,11 @@
 
 .mainHeaderText {
     font-size: large;
+    transition: color 0.3s ease;
+}
+
+.mainHeaderText:hover {
+    color: rgb(255, 255, 66);
 }
 
 .buttonHeaderText {

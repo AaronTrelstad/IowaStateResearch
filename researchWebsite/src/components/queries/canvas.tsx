@@ -385,7 +385,7 @@ const Canvas = () => {
                             />
                         </div>
                         <div className='dropDownContainer'>
-                            <label className='dropDownTitle'>Zoom</label>
+                            <label className='dropDownTitle'>Set Zoom</label>
                             <input
                                 type='number'
                                 className='dropDown'

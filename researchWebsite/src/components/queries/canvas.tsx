@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { Position } from 'geojson';
 import axios from 'axios';
@@ -13,13 +13,16 @@ const Canvas = () => {
     const [color, setColor] = useState<string>("red");
     const [datasetName, setDatasetName] = useState<string>('');
     const [activeTab, setActiveTab] = useState<string>('datasets');
-    const [maxValues, setMaxValues] = useState<number>(1000);
+    const [maxValues, setMaxValues] = useState<number>();
     const [addBorder, setAddBorder] = useState<boolean>(false);
     const [schema, setSchema] = useState<{ [key: string]: string }>({});
     const [numValues, setNumValues] = useState<number>(0);
-    const [dataRadius, setDataRadius] = useState<number>(1000);
+    const [dataRadius, setDataRadius] = useState<number>();
     const [lineColor, setLineColor] = useState<string>("black")
     const [addDensityBorder, setAddDensityBorder] = useState<boolean>(false);
+    const [startingLat, setStartingLat] = useState<number>(42);
+    const [startingLong, setStartingLong] = useState<number>(-92);
+
     let densityExtension: number;
 
     useEffect(() => {
@@ -27,7 +30,7 @@ const Canvas = () => {
             const newMap = new mapboxgl.Map({
                 container: mapContainer.current,
                 style: mapStyle,
-                center: [-92, 42],
+                center: [startingLong, startingLat],
                 zoom: 5
             });
 
@@ -39,7 +42,7 @@ const Canvas = () => {
                 newMap.remove();
             };
         }
-    }, [mapContainer, mapStyle]);
+    }, [mapContainer, mapStyle, startingLat, startingLong]);
 
     useEffect(() => {
         if (datasetName != '') {
@@ -86,7 +89,10 @@ const Canvas = () => {
             let minLong = 200;
             let borders: Position[] = [];
             let denseBorders: Position[] = [];
-            const extendPercentage = 0.005
+            const extendPercentage = 0.005;
+
+            // In radius bounds
+            
 
             data.forEach((location: any, index: number) => {
                 const id = `${index}-circle`;
@@ -130,7 +136,7 @@ const Canvas = () => {
                 count++;
             });
 
-            densityExtension = (maxLat - minLat) * 0.005;
+            densityExtension = (maxLat - minLat) * 0.003;
 
             borders.push([maxLong - (maxLong * extendPercentage), maxLat + (maxLat * extendPercentage)]);
             borders.push([maxLong - (maxLong * extendPercentage), minLat - (minLat * extendPercentage)]);
@@ -360,6 +366,34 @@ const Canvas = () => {
                             />
                         </div>
                         <div className='dropDownContainer'>
+                            <label className='dropDownTitle'>Set Starting Longitude</label>
+                            <input
+                                type='number'
+                                className='dropDown'
+                                value={startingLong}
+                                onChange={(e) => setStartingLong(Number(e.target.value))}
+                            />
+                        </div>
+                        <div className='dropDownContainer'>
+                            <label className='dropDownTitle'>Set Starting Latitude</label>
+                            <input
+                                type='number'
+                                className='dropDown'
+                                value={startingLat}
+                                onChange={(e) => setStartingLat(Number(e.target.value))}
+                            />
+                        </div>
+                        <div className='dropDownContainer'>
+                            <label className='dropDownTitle'>Set Data Radius (mi)</label>
+                            <input
+                                type='number'
+                                className='dropDown'
+                                value={dataRadius}
+                                onChange={(e) => setDataRadius(Number(e.target.value))}
+                                placeholder='Data Radius'
+                            />
+                        </div>
+                        <div className='dropDownContainer'>
                             <label className='dropDownTitle'>Max Values Displayed</label>
                             <input
                                 type='number'
@@ -367,15 +401,6 @@ const Canvas = () => {
                                 value={maxValues}
                                 onChange={(e) => setMaxValues(Number(e.target.value))}
                                 placeholder="Num Values"
-                            />
-                        </div>
-                        <div className='dropDownContainer'>
-                            <label className='dropDownTitle'>Set Data Radius</label>
-                            <input
-                                type='number'
-                                className='dropDown'
-                                value={dataRadius}
-                                onChange={(e) => setDataRadius(Number(e.target.value))}
                             />
                         </div>
                     </>

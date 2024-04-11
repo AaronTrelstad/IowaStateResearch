@@ -11,7 +11,11 @@ const Queries = () => {
                 <Canvas />
 
             </div>
-            <p>Datasets stored using AWS DynamoDB and AWS S3. Uses AWS Lambdas functions for tasks.</p>
+            <div className="queriesContainer">
+                <h1>To-Do List</h1>
+                <p>1. Add ability to add multiple datasets onto the same graph</p>
+                <p>2. Show time series data</p>
+            </div>
         </>
     )
 }

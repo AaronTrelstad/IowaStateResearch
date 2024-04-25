@@ -12,6 +12,7 @@ const Queries = () => {
 
             </div>
             <div className="queriesContainer">
+                <p>There are 67 different respondents</p>
                 <h1>To-Do List</h1>
                 <p>1. Add ability to add multiple datasets onto the same graph</p>
                 <p>2. Show time series data</p>

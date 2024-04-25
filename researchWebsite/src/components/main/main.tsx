@@ -12,9 +12,9 @@ export default function Main() {
             <Header/>
             <h1 className='mainPageHeader'>Current Projects</h1>
             <DynamicDataMap />
+            <ColorDataMap />
             <JSONDataMap />
             <CSVDataMap />
-            <ColorDataMap />
             <DefaultMap />
             <div className='mainContainer' />
             <Footer />

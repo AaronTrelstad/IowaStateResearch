@@ -1,8 +1,8 @@
 .canvasContainer {
     display: flex;
     justify-content: center;
-    width: 90%;
-    height: auto;
+    height: 50%;
+    width: auto;
     margin: 2rem;
     margin-top: 5%;
     position: relative;
@@ -71,7 +71,7 @@
 .tabs {
     display: flex;
     border-bottom: 1px solid #ccc;
-    margin-bottom: 0.5rem;
+    
 }
 
 .tabs button {
@@ -103,4 +103,23 @@
 
 .infoContainer {
 
+}
+
+.scrollable {
+    height: 400px;
+    overflow: scroll;
+}
+
+.dataContainer {
+    display: flex;
+    justify-content: center;
+    height: 20%;
+    width: auto;
+        
+    margin: 2rem;
+    margin-top: 5%; 
+}
+
+.dataChart {
+    
 }

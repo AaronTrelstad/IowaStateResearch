@@ -1,17 +1,29 @@
 import { useState, useRef, useEffect } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { Position } from 'geojson';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import axios from 'axios';
+import Chart from 'chart.js/auto';
 import './canvas.css';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiYWFyb250cmVsc3RhZCIsImEiOiJjbHRyaW16YnkwN3dmMmxwaWwyODljZnFmIn0.nzXluM3BCOrEu5_Xx-2deA';
+
+// Use this to represent the data that is fetched
+interface EIA_Data {
+    respondent: string,
+    value: number,
+}
+
+let hoveredPolygonId: any = null;
+
 
 const Canvas = () => {
     const mapContainer = useRef<HTMLDivElement>(null);
     const [mapStyle, setMapStyle] = useState<string>('mapbox://styles/mapbox/standard');
     const [map, setMap] = useState<mapboxgl.Map | null>(null);
     const [color, setColor] = useState<string>("red");
-    const [datasetName, setDatasetName] = useState<string>('');
+    const [datasetName, setDatasetName] = useState<string[]>(['']);
     const [activeTab, setActiveTab] = useState<string>('datasets');
     const [maxValues, setMaxValues] = useState<number>();
     const [addBorder, setAddBorder] = useState<boolean>(false);
@@ -23,6 +35,14 @@ const Canvas = () => {
     const [startingLat, setStartingLat] = useState<number>(42);
     const [startingLong, setStartingLong] = useState<number>(-92);
     const [startingZoom, setStartingZoom] = useState<number>(5);
+    const [numDatasets, setNumDatasets] = useState<number>(1);
+    const [startDate, setStartDate] = useState<Date>(new Date());
+    const [endDate, setEndDate] = useState<Date>(new Date());
+    const [showBounderies, setShowBoundaries] = useState<boolean>(false);
+
+    /**
+     * US48 is the total for the entire mainland US
+     */
 
     let densityExtension: number;
 
@@ -32,7 +52,7 @@ const Canvas = () => {
                 container: mapContainer.current,
                 style: mapStyle,
                 center: [startingLong, startingLat],
-                zoom: startingZoom
+                zoom: startingZoom,
             });
 
             newMap.addControl(new mapboxgl.NavigationControl(), "top-left");
@@ -43,13 +63,14 @@ const Canvas = () => {
                 newMap.remove();
             };
         }
-    }, [mapContainer, mapStyle, startingLat, startingLong]);
+    }, [mapContainer, mapStyle, startingLat, startingLong, startingZoom]);
 
     useEffect(() => {
-        if (datasetName != '') {
+        if (datasetName[0] != '') {
             retrieveData(datasetName);
+
         }
-    }, [color, lineColor, addBorder, addDensityBorder, map])
+    }, [color, lineColor, addBorder, addDensityBorder, showBounderies, map])
 
     const getDataSchema = (data: any): { [key: string]: string } => {
         const schema: { [key: string]: string } = {};
@@ -65,22 +86,84 @@ const Canvas = () => {
         return schema;
     };
 
-    const retrieveData = async (datasetName: string) => {
-        try {
-            const response = await axios.get(`https://krpaslyj9k.execute-api.us-east-2.amazonaws.com/prod/getData?tableName=${datasetName}`);
-            const data = response.data;
-            addLayers(data);
+    const retrieveData = async (datasetNames: string[]) => {
+        console.log(datasetNames);
+        let information = []
+        removeLayers();
 
-            const schema = getDataSchema(data[0]);
-            setSchema(schema);
-        } catch (error) {
-            console.error('Error retrieving data:', error);
+        for (let i = 0; i < datasetNames.length; i++) {
+            try {
+                let datasetName = datasetNames[i];
+                const response = await axios.get(`https://krpaslyj9k.execute-api.us-east-2.amazonaws.com/prod/getData?tableName=${datasetName}`);
+                const data = response.data;
+                addLayers(data);
+
+                information.push(data)
+                const schema = getDataSchema(data[0]);
+                setSchema(schema);
+            } catch (error) {
+                console.error('Error retrieving data:', error);
+            }
         }
+
+        console.log(information);
+        createCharts(information);
+
     };
+
+    const createCharts = (data: any[]) => {
+
+    }
+
+    /**
+     * Split this up into two methods addData, and addStyles.
+     * This prevents the data from being reloaded everytime
+     */
+
+
+    /**
+     * Only called when we need to fetch data
+     * @param data
+     */
+    const addDataLayers = (data: any) => {
+        if (map) {
+            removeDataLayers();
+        }
+    }
+
+    /**
+     * Called for style changes, when we dont need to fetch data
+     */
+    const addStyleLayers = () => {
+        if (map) {
+            removeStyleLayers();
+        }
+    }
 
     const addLayers = (data: any) => {
         if (map) {
-            removeLayers();
+            
+
+            if (showBounderies) {
+                map.addSource('boundaryAuth-source', {
+                    type: 'geojson',
+                    data: '/Control_Areas.geojson',
+                });
+
+                map.addLayer({
+                    id: `balancingAuthorities-layer`,
+                    type: "line",
+                    source: 'boundaryAuth-source',
+                    layout: {
+                        'line-join': 'round',
+                        'line-cap': 'round',
+                    },
+                    paint: {
+                        'line-color': lineColor,
+                        'line-width': 0.5,
+                    },
+                });
+            }
 
             let count = 0
 
@@ -91,9 +174,6 @@ const Canvas = () => {
             let borders: Position[] = [];
             let denseBorders: Position[] = [];
             const extendPercentage = 0.005;
-
-            // In radius bounds
-            
 
             data.forEach((location: any, index: number) => {
                 const id = `${index}-circle`;
@@ -234,7 +314,7 @@ const Canvas = () => {
                 }
             })
 
-            if(matches > maxMatches) {
+            if (matches > maxMatches) {
                 maxMatches = matches;
                 dense = box
             }
@@ -249,6 +329,20 @@ const Canvas = () => {
         return result;
     }
 
+    /**
+     * Remove Style based layers
+     */
+    const removeStyleLayers = () => {
+
+    }
+
+    /**
+     * Remove the datasets
+     */
+    const removeDataLayers = () => {
+
+    }
+ 
     const removeLayers = () => {
         if (map && map.getStyle()) {
             const mapLayers = map.getStyle().layers;
@@ -272,159 +366,242 @@ const Canvas = () => {
         setActiveTab(tab);
     };
 
-    return (
-        <div className='mainContainer'>
-            <div ref={mapContainer} className='mapContainer' />
-            <div className="optionsContainer">
-                <div className="tabs">
-                    <button className={activeTab === 'datasets' ? 'active' : ''} onClick={() => handleTabChange('datasets')}>Dataset</button>
-                    <button className={activeTab === 'styles' ? 'active' : ''} onClick={() => handleTabChange('styles')}>Styles</button>
-                    <button className={activeTab === 'query' ? 'active' : ''} onClick={() => handleTabChange('query')}>Query</button>
-                    <button className={activeTab === 'info' ? 'active' : ''} onClick={() => handleTabChange('info')}>Info</button>
-                </div>
-                {activeTab === 'datasets' && (
-                    <>
-                        <div className='dropDownContainer'>
-                            <label className='dropDownTitle'>Dataset</label>
-                            <select className='dropDown' id="dataset" onChange={(e) => setDatasetName(e.target.value)}>
-                                <option>---Datasets---</option>
-                                <option value={"AirportData"}>Airport Data</option>
-                                <option value={"timeSeries"}>Time Series</option>
-                                <option value={"QueryPoints"}>Query Points</option>
-                            </select>
-                        </div>
+    const updateDatasets = (dataset: string, index: number) => {
+        while (datasetName.length != numDatasets) {
+            if (datasetName.length > numDatasets) {
+                datasetName.pop();
+            } else {
+                datasetName.push('');
+            }
+        }
 
-                        <div className='buttonContainer'>
-                            <button className='saveOptionsButton' onClick={() => retrieveData(datasetName)}>Load Datasets</button>
-                        </div>
-                        {Object.keys(schema).length > 0 && (
-                            <div className="schemaContainer">
-                                <h3>Data Schema:</h3>
-                                <pre>{JSON.stringify(schema, null, 2)}</pre>
+        let sets = [...datasetName];
+
+        sets[index] = dataset;
+
+        setDatasetName(sets);
+    }
+
+    const handleNumDatasetsChange = (event: any) => {
+        const newNumDatasets = parseInt(event.target.value, 10);
+        setNumDatasets(newNumDatasets);
+    
+        const newDatasetArray = Array.from({ length: newNumDatasets }, (v, i) => datasetName[i] || '');
+        setDatasetName(newDatasetArray);
+    };
+
+    return (
+        <>
+            <div className='mainContainer'>
+                <div ref={mapContainer} className='mapContainer' />
+                <div className="optionsContainer">
+                    <div className="tabs">
+                        <button className={activeTab === 'datasets' ? 'active' : ''} onClick={() => handleTabChange('datasets')}>Dataset</button>
+                        <button className={activeTab === 'styles' ? 'active' : ''} onClick={() => handleTabChange('styles')}>Styles</button>
+                        <button className={activeTab === 'query' ? 'active' : ''} onClick={() => handleTabChange('query')}>Query</button>
+                    </div>
+                    {activeTab === 'datasets' && (
+                        <>
+                            <div className='dropDownContainer'>
+                                <label className='dropDownTitle'>Number of Datasets</label>
+                                <input
+                                    type='number'
+                                    className='dropDown'
+                                    value={numDatasets}
+                                    onChange={handleNumDatasetsChange}
+                                    min={1}
+                                />
                             </div>
-                        )}
-                    </>
-                )}
-                {activeTab === 'styles' && (
-                    <>
-                        <div className='dropDownContainer'>
-                            <label className='dropDownTitle'>Map Style</label>
-                            <select className='dropDown' id="mapStyle" onChange={(e) => setMapStyle(e.target.value)}>
-                                <option>-------Styles-------</option>
-                                <option value="mapbox://styles/mapbox/standard">Standard</option>
-                                <option value="mapbox://styles/mapbox/streets-v12">Streets</option>
-                                <option value="mapbox://styles/mapbox/outdoors-v12">Outdoors</option>
-                                <option value="mapbox://styles/mapbox/light-v11">Light</option>
-                                <option value="mapbox://styles/mapbox/dark-v11">Dark</option>
-                                <option value="mapbox://styles/mapbox/satellite-v9">Satellite</option>
-                                <option value="mapbox://styles/mapbox/satellite-streets-v12">Satellite Streets</option>
-                                <option value="mapbox://styles/mapbox/navigation-day-v1">Navigation Day</option>
-                                <option value="mapbox://styles/mapbox/navigation-night-v1">Navigation Night</option>
-                            </select>
+                            {datasetName.map((dataset, index) => (
+                                <div key={index} className='dropDownContainer'>
+                                    <label className='dropDownTitle'>Dataset {index + 1}</label>
+                                    <select
+                                        className='dropDown'
+                                        id='dataset'
+                                        onChange={(e) => updateDatasets(e.target.value, index)}
+                                        value={dataset} 
+                                    >
+                                        <option>---Datasets---</option>
+                                        <option value={"AirportData"}>Airport Data</option>
+                                        <option value={"timeSeries"}>Time Series</option>
+                                        <option value={"QueryPoints"}>Query Points</option>
+                                        <option value={"EIAData_2019"}>EIA Data</option>
+                                    </select>
+                                </div>
+                            ))}
+                            <div className='buttonContainer'>
+                                <button className='saveOptionsButton' onClick={() => retrieveData(datasetName)}>Load Datasets</button>
+                            </div>
+                            {
+                                Object.keys(schema).length > 0 && (
+                                    <div className="schemaContainer">
+                                        <h3>Data Schema:</h3>
+                                        <pre>{JSON.stringify(schema, null, 2)}</pre>
+                                    </div>
+                                )
+                            }
+                        </>
+                    )}
+                    {activeTab === 'styles' && (
+                        <>
+                            <div className='dropDownContainer'>
+                                <label className='dropDownTitle'>Map Style</label>
+                                <select className='dropDown' id="mapStyle" onChange={(e) => setMapStyle(e.target.value)}>
+                                    <option>-------Styles-------</option>
+                                    <option value="mapbox://styles/mapbox/standard">Standard</option>
+                                    <option value="mapbox://styles/mapbox/streets-v12">Streets</option>
+                                    <option value="mapbox://styles/mapbox/outdoors-v12">Outdoors</option>
+                                    <option value="mapbox://styles/mapbox/light-v11">Light</option>
+                                    <option value="mapbox://styles/mapbox/dark-v11">Dark</option>
+                                    <option value="mapbox://styles/mapbox/satellite-v9">Satellite</option>
+                                    <option value="mapbox://styles/mapbox/satellite-streets-v12">Satellite Streets</option>
+                                    <option value="mapbox://styles/mapbox/navigation-day-v1">Navigation Day</option>
+                                    <option value="mapbox://styles/mapbox/navigation-night-v1">Navigation Night</option>
+                                </select>
+                            </div>
+                            <div className='dropDownContainer'>
+                                <label className='dropDownTitle'>Color</label>
+                                <select className='dropDown' id="dataColor" onChange={(e) => setColor(e.target.value)}>
+                                    <option>--Colors--</option>
+                                    <option value="red">Red</option>
+                                    <option value="yellow">Yellow</option>
+                                    <option value="green">Green</option>
+                                    <option value="blue">Blue</option>
+                                    <option value="purple">Purple</option>
+                                </select>
+                            </div>
+                            <div className='dropDownContainer'>
+                                <label className='dropDownTitle'>Line Color</label>
+                                <select className='dropDown' id="dataColor" onChange={(e) => setLineColor(e.target.value)}>
+                                    <option>--Colors--</option>
+                                    <option value="black">Black</option>
+                                    <option value="white">White</option>
+                                    <option value="red">Red</option>
+                                    <option value="green">Green</option>
+                                    <option value="yellow">Yellow</option>
+                                </select>
+                            </div>
+                        </>
+                    )}
+                    {activeTab === 'query' && (
+                        <div className='scrollable'>
+                            <div className='dropDownContainer'>
+                                <label className='dropDownTitle'>Borders</label>
+                                <input
+                                    type='checkbox'
+                                    className='dropDown'
+                                    checked={addBorder}
+                                    onChange={(e) => setAddBorder(e.target.checked)}
+                                />
+                            </div>
+                            <div className='dropDownContainer'>
+                                <label className='dropDownTitle'>Mark Dense Areas</label>
+                                <input
+                                    type='checkbox'
+                                    className='dropDown'
+                                    checked={addDensityBorder}
+                                    onChange={(e) => setAddDensityBorder(e.target.checked)}
+                                />
+                            </div>
+                            <div className='dropDownContainer'>
+                                <label className='dropDownTitle'>Show Balancing Authorities</label>
+                                <input
+                                    type='checkbox'
+                                    className='dropDown'
+                                    checked={showBounderies}
+                                    onChange={(e) => setShowBoundaries(e.target.checked)}
+                                />
+                            </div>
+                            <div className='dropDownContainer'>
+                                <label className='dropDownTitle'>Set Starting Longitude</label>
+                                <input
+                                    type='number'
+                                    className='dropDown'
+                                    value={startingLong}
+                                    onChange={(e) => setStartingLong(Number(e.target.value))}
+                                />
+                            </div>
+                            <div className='dropDownContainer'>
+                                <label className='dropDownTitle'>Set Starting Latitude</label>
+                                <input
+                                    type='number'
+                                    className='dropDown'
+                                    value={startingLat}
+                                    onChange={(e) => setStartingLat(Number(e.target.value))}
+                                />
+                            </div>
+                            <div className='dropDownContainer'>
+                                <label className='dropDownTitle'>Set Zoom</label>
+                                <input
+                                    type='number'
+                                    className='dropDown'
+                                    value={startingZoom}
+                                    onChange={(e) => setStartingZoom(Number(e.target.value))}
+                                    placeholder='5'
+                                />
+                            </div>
+                            <div className='dropDownContainer'>
+                                <label className='dropDownTitle'>Set Data Radius (mi)</label>
+                                <input
+                                    type='number'
+                                    className='dropDown'
+                                    value={dataRadius}
+                                    onChange={(e) => setDataRadius(Number(e.target.value))}
+                                    placeholder='Data Radius'
+                                />
+                            </div>
+                            <div className='dropDownContainer'>
+                                <label className='dropDownTitle'>Max Values Displayed</label>
+                                <input
+                                    type='number'
+                                    className='dropDown'
+                                    value={maxValues}
+                                    onChange={(e) => setMaxValues(Number(e.target.value))}
+                                    placeholder="Num Values"
+                                />
+                            </div>
+                            <div className='dropDownContainer'>
+                                <label className='dropDownTitle'>Set Start Date</label>
+                                <div className='dropDown'>
+                                    <DatePicker selected={startDate} onChange={(startDate) => setStartDate(startDate!)} />
+                                </div>
+
+                            </div>
+                            <div className='dropDownContainer'>
+                                <label className='dropDownTitle'>Set End Date</label>
+                                <div className='dropDown'>
+                                    <DatePicker selected={endDate} onChange={(endDate) => setEndDate(endDate!)} />
+                                </div>
+                            </div>
+                            <div className='dropDownContainer'>
+
+                            </div>
                         </div>
-                        <div className='dropDownContainer'>
-                            <label className='dropDownTitle'>Color</label>
-                            <select className='dropDown' id="dataColor" onChange={(e) => setColor(e.target.value)}>
-                                <option>--Colors--</option>
-                                <option value="red">Red</option>
-                                <option value="yellow">Yellow</option>
-                                <option value="green">Green</option>
-                                <option value="blue">Blue</option>
-                                <option value="purple">Purple</option>
-                            </select>
-                        </div>
-                        <div className='dropDownContainer'>
-                            <label className='dropDownTitle'>Line Color</label>
-                            <select className='dropDown' id="dataColor" onChange={(e) => setLineColor(e.target.value)}>
-                                <option>--Colors--</option>
-                                <option value="black">Black</option>
-                                <option value="white">White</option>
-                                <option value="red">Red</option>
-                                <option value="green">Green</option>
-                                <option value="yellow">Yellow</option>
-                            </select>
-                        </div>
-                    </>
-                )}
-                {activeTab === 'query' && (
-                    <>
-                        <div className='dropDownContainer'>
-                            <label className='dropDownTitle'>Borders</label>
-                            <input
-                                type='checkbox'
-                                className='dropDown'
-                                checked={addBorder}
-                                onChange={(e) => setAddBorder(e.target.checked)}
-                            />
-                        </div>
-                        <div className='dropDownContainer'>
-                            <label className='dropDownTitle'>Mark Dense Areas</label>
-                            <input
-                                type='checkbox'
-                                className='dropDown'
-                                checked={addDensityBorder}
-                                onChange={(e) => setAddDensityBorder(e.target.checked)}
-                            />
-                        </div>
-                        <div className='dropDownContainer'>
-                            <label className='dropDownTitle'>Set Starting Longitude</label>
-                            <input
-                                type='number'
-                                className='dropDown'
-                                value={startingLong}
-                                onChange={(e) => setStartingLong(Number(e.target.value))}
-                            />
-                        </div>
-                        <div className='dropDownContainer'>
-                            <label className='dropDownTitle'>Set Starting Latitude</label>
-                            <input
-                                type='number'
-                                className='dropDown'
-                                value={startingLat}
-                                onChange={(e) => setStartingLat(Number(e.target.value))}
-                            />
-                        </div>
-                        <div className='dropDownContainer'>
-                            <label className='dropDownTitle'>Set Zoom</label>
-                            <input
-                                type='number'
-                                className='dropDown'
-                                value={startingZoom}
-                                onChange={(e) => setStartingZoom(Number(e.target.value))}
-                                placeholder='5'
-                            />
-                        </div>
-                        <div className='dropDownContainer'>
-                            <label className='dropDownTitle'>Set Data Radius (mi)</label>
-                            <input
-                                type='number'
-                                className='dropDown'
-                                value={dataRadius}
-                                onChange={(e) => setDataRadius(Number(e.target.value))}
-                                placeholder='Data Radius'
-                            />
-                        </div>
-                        <div className='dropDownContainer'>
-                            <label className='dropDownTitle'>Max Values Displayed</label>
-                            <input
-                                type='number'
-                                className='dropDown'
-                                value={maxValues}
-                                onChange={(e) => setMaxValues(Number(e.target.value))}
-                                placeholder="Num Values"
-                            />
-                        </div>
-                    </>
-                )}
-                {activeTab === 'info' && (
-                    <>
-                        <div className='infoContainer'>
-                            <h3>Total Values: {numValues}</h3>
-                        </div>
-                    </>
-                )}
+                    )}
+                    {activeTab === 'info' && (
+                        <>
+                            <div className='infoContainer'>
+                                <h3>Total Values: {numValues}</h3>
+                                {datasetName[0] === 'EIA Data' && (
+                                    <h3>Total Power: { }</h3>
+                                )}
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
-        </div>
+            <div className='dataContainer'>
+                <div className='dataChart'>
+                    <h1>Num points</h1>
+                </div>
+                <div className='dataChart'>
+                    <h1>Total power</h1>
+                </div>
+                <div className='dataChart'>
+                    <h1>Time series</h1>
+                </div>
+            </div>
+        </>
     )
 }
 

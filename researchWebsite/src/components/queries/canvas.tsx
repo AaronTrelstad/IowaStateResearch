@@ -28,7 +28,7 @@ const Canvas = () => {
     const [maxValues, setMaxValues] = useState<number>();
     const [addBorder, setAddBorder] = useState<boolean>(false);
     const [schema, setSchema] = useState<{ [key: string]: string }>({});
-    const [numValues, setNumValues] = useState<number>(0);
+    const [numValues, setNumValues] = useState<number[]>([0]);
     const [dataRadius, setDataRadius] = useState<number>();
     const [lineColor, setLineColor] = useState<string>("black")
     const [addDensityBorder, setAddDensityBorder] = useState<boolean>(false);
@@ -57,6 +57,8 @@ const Canvas = () => {
 
             newMap.addControl(new mapboxgl.NavigationControl(), "top-left");
 
+            console.log("dataset: ", datasetName)
+
             setMap(newMap);
 
             return () => {
@@ -66,6 +68,8 @@ const Canvas = () => {
     }, [mapContainer, mapStyle, startingLat, startingLong, startingZoom]);
 
     useEffect(() => {
+        console.log("Dataset Test", datasetName)
+        
         if (datasetName[0] != '') {
             retrieveData(datasetName);
 
@@ -87,16 +91,20 @@ const Canvas = () => {
     };
 
     const retrieveData = async (datasetNames: string[]) => {
-        console.log(datasetNames);
         let information = []
-        removeLayers();
+        let counts = []
+
+        removeLayers()
+
 
         for (let i = 0; i < datasetNames.length; i++) {
             try {
                 let datasetName = datasetNames[i];
                 const response = await axios.get(`https://krpaslyj9k.execute-api.us-east-2.amazonaws.com/prod/getData?tableName=${datasetName}`);
                 const data = response.data;
-                addLayers(data);
+                addLayers(data, i);
+
+                counts.push(data.length)
 
                 information.push(data)
                 const schema = getDataSchema(data[0]);
@@ -106,13 +114,59 @@ const Canvas = () => {
             }
         }
 
-        console.log(information);
+        await setNumValues(counts);
         createCharts(information);
-
     };
 
     const createCharts = (data: any[]) => {
+        NumValuesChart()
+        TotalPowerChart()
+    }
 
+    const NumValuesChart = () => {
+        const chartRef = useRef<HTMLCanvasElement>(null);
+        const chartInstance = useRef<Chart | null>(null);
+
+        useEffect(() => {
+            if (chartInstance.current) {
+                chartInstance.current.destroy();
+            }
+
+            if (chartRef.current && numValues.length > 0) {
+                const ctx = chartRef.current.getContext('2d');
+                if (ctx) {
+                    chartInstance.current = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: datasetName,
+                            datasets: [{
+                                label: 'Number of Values',
+                                data: numValues,
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgb(255, 99, 132)',
+                                borderWidth: 1
+                            }]
+                        }
+                    });
+                }
+            }
+
+            return () => {
+                if (chartInstance.current) {
+                    chartInstance.current.destroy();
+                }
+            };
+        }, [numValues, datasetName]);
+
+        return <canvas ref={chartRef} />;
+    }
+
+    const TotalPowerChart = () => {
+        if (datasetName.indexOf("EIAData_2019") != -1) {
+            // make chart showing power
+        } else {
+
+        }
     }
 
     /**
@@ -140,10 +194,9 @@ const Canvas = () => {
         }
     }
 
-    const addLayers = (data: any) => {
+    const addLayers = (data: any, numSet: number) => {
         if (map) {
-            
-
+            console.log(showBounderies)
             if (showBounderies) {
                 map.addSource('boundaryAuth-source', {
                     type: 'geojson',
@@ -151,7 +204,7 @@ const Canvas = () => {
                 });
 
                 map.addLayer({
-                    id: `balancingAuthorities-layer`,
+                    id: `balancingAuthorities-lines`,
                     type: "line",
                     source: 'boundaryAuth-source',
                     layout: {
@@ -176,7 +229,7 @@ const Canvas = () => {
             const extendPercentage = 0.005;
 
             data.forEach((location: any, index: number) => {
-                const id = `${index}-circle`;
+                const id = `${index}-circle-${numSet}`;
                 const latitude = parseFloat(location.latitude.S);
                 const longitude = parseFloat(location.longitude.S);
 
@@ -227,7 +280,7 @@ const Canvas = () => {
 
             if (addBorder) {
                 map.addLayer({
-                    id: `Borders-${count}-lines`,
+                    id: `Borders-${count}-lines-${numSet}`,
                     type: "line",
                     source: {
                         type: 'geojson',
@@ -255,7 +308,7 @@ const Canvas = () => {
                 denseBorders = calculateDenseArea(data);
 
                 map.addLayer({
-                    id: `Density-${count}-lines`,
+                    id: `Density-${count}-lines-${numSet}`,
                     type: "line",
                     source: {
                         type: 'geojson',
@@ -278,8 +331,6 @@ const Canvas = () => {
                     },
                 })
             }
-
-            setNumValues(count);
         }
     };
 
@@ -343,7 +394,8 @@ const Canvas = () => {
 
     }
  
-    const removeLayers = () => {
+    const removeLayers = async () => {
+        await map?.getStyle();
         if (map && map.getStyle()) {
             const mapLayers = map.getStyle().layers;
             if (mapLayers) {
@@ -410,6 +462,7 @@ const Canvas = () => {
                                     value={numDatasets}
                                     onChange={handleNumDatasetsChange}
                                     min={1}
+                                    max={5}
                                 />
                             </div>
                             {datasetName.map((dataset, index) => (
@@ -592,7 +645,7 @@ const Canvas = () => {
             </div>
             <div className='dataContainer'>
                 <div className='dataChart'>
-                    <h1>Num points</h1>
+                    <NumValuesChart />
                 </div>
                 <div className='dataChart'>
                     <h1>Total power</h1>

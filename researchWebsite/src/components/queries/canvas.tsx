@@ -55,9 +55,12 @@ const Canvas = () => {
                 zoom: startingZoom,
             });
 
-            newMap.addControl(new mapboxgl.NavigationControl(), "top-left");
+            newMap.on('load', () => newMap.addSource('boundaryAuth-source', {
+                type: 'geojson',
+                data: '/Control_Areas.geojson',
+            }));
 
-            console.log("dataset: ", datasetName)
+            newMap.addControl(new mapboxgl.NavigationControl(), "top-left");
 
             setMap(newMap);
 
@@ -68,8 +71,6 @@ const Canvas = () => {
     }, [mapContainer, mapStyle, startingLat, startingLong, startingZoom]);
 
     useEffect(() => {
-        console.log("Dataset Test", datasetName)
-        
         if (datasetName[0] != '') {
             retrieveData(datasetName);
 
@@ -115,13 +116,7 @@ const Canvas = () => {
         }
 
         await setNumValues(counts);
-        createCharts(information);
     };
-
-    const createCharts = (data: any[]) => {
-        NumValuesChart()
-        TotalPowerChart()
-    }
 
     const NumValuesChart = () => {
         const chartRef = useRef<HTMLCanvasElement>(null);
@@ -169,6 +164,49 @@ const Canvas = () => {
         }
     }
 
+    const TimeSeriesChart = () => {
+        const chartRef = useRef<HTMLCanvasElement>(null);
+        const chartInstance = useRef<Chart | null>(null);
+        const labels = [0, 1, 2, 3, 4, 5]
+
+        const data = [4, 3, 6, 7, 1, 2]
+
+        useEffect(() => {
+            if (chartInstance.current) {
+                chartInstance.current.destroy();
+            }
+
+            if (chartRef.current && numValues.length > 0) {
+                const ctx = chartRef.current.getContext('2d');
+                if (ctx) {
+                    chartInstance.current = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Time Series',
+                                    data: data,
+                                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                    borderColor: 'rgb(255, 99, 132)',
+                                    borderWidth: 1
+                                },
+                            ]
+                        }
+                    });
+                }
+            }
+
+            return () => {
+                if (chartInstance.current) {
+                    chartInstance.current.destroy();
+                }
+            };
+        }, [numValues, datasetName]);
+
+        return <canvas ref={chartRef} />;
+    }
+
     /**
      * Split this up into two methods addData, and addStyles.
      * This prevents the data from being reloaded everytime
@@ -196,12 +234,8 @@ const Canvas = () => {
 
     const addLayers = (data: any, numSet: number) => {
         if (map) {
-            console.log(showBounderies)
             if (showBounderies) {
-                map.addSource('boundaryAuth-source', {
-                    type: 'geojson',
-                    data: '/Control_Areas.geojson',
-                });
+                
 
                 map.addLayer({
                     id: `balancingAuthorities-lines`,
@@ -393,7 +427,7 @@ const Canvas = () => {
     const removeDataLayers = () => {
 
     }
- 
+
     const removeLayers = async () => {
         await map?.getStyle();
         if (map && map.getStyle()) {
@@ -405,7 +439,9 @@ const Canvas = () => {
                             map.removeLayer(layer.id);
                         }
 
+                        // Doesnt remove source
                         if (map.getSource(layer.id)) {
+                            console.log(map.getSource(layer.id))
                             map.removeSource(layer.id);
                         }
                     }
@@ -437,7 +473,7 @@ const Canvas = () => {
     const handleNumDatasetsChange = (event: any) => {
         const newNumDatasets = parseInt(event.target.value, 10);
         setNumDatasets(newNumDatasets);
-    
+
         const newDatasetArray = Array.from({ length: newNumDatasets }, (v, i) => datasetName[i] || '');
         setDatasetName(newDatasetArray);
     };
@@ -453,7 +489,8 @@ const Canvas = () => {
                         <button className={activeTab === 'query' ? 'active' : ''} onClick={() => handleTabChange('query')}>Query</button>
                     </div>
                     {activeTab === 'datasets' && (
-                        <>
+                        <div className="scrollable">
+
                             <div className='dropDownContainer'>
                                 <label className='dropDownTitle'>Number of Datasets</label>
                                 <input
@@ -472,7 +509,7 @@ const Canvas = () => {
                                         className='dropDown'
                                         id='dataset'
                                         onChange={(e) => updateDatasets(e.target.value, index)}
-                                        value={dataset} 
+                                        value={dataset}
                                     >
                                         <option>---Datasets---</option>
                                         <option value={"AirportData"}>Airport Data</option>
@@ -485,15 +522,18 @@ const Canvas = () => {
                             <div className='buttonContainer'>
                                 <button className='saveOptionsButton' onClick={() => retrieveData(datasetName)}>Load Datasets</button>
                             </div>
-                            {
+                            {datasetName.map((dataset) => (
                                 Object.keys(schema).length > 0 && (
                                     <div className="schemaContainer">
-                                        <h3>Data Schema:</h3>
+                                        <h3>Data Schema: {dataset}</h3>
                                         <pre>{JSON.stringify(schema, null, 2)}</pre>
                                     </div>
                                 )
+                            ))
+
                             }
-                        </>
+
+                        </div>
                     )}
                     {activeTab === 'styles' && (
                         <>
@@ -648,11 +688,9 @@ const Canvas = () => {
                     <NumValuesChart />
                 </div>
                 <div className='dataChart'>
-                    <h1>Total power</h1>
+                    <TimeSeriesChart />
                 </div>
-                <div className='dataChart'>
-                    <h1>Time series</h1>
-                </div>
+
             </div>
         </>
     )
